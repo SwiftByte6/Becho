@@ -300,6 +300,41 @@ export default function WasteHeatmap() {
     return colors[category] || "#6b7280";
   }
 
+  function renderContent(content) {
+    if (!content) return null;
+    const lines = content.split("\n");
+
+    return lines.map((line, lineIdx) => {
+      const isBullet =
+        line.trim().startsWith("- ") || line.trim().startsWith("* ");
+      const cleanLine = isBullet ? line.trim().substring(2) : line;
+
+      const parts = cleanLine.split(/(\*\*.*?\*\*)/g);
+
+      const renderedLine = parts.filter(Boolean).map((part, i) => {
+        const boldMatch = part.match(/\*\*(.*?)\*\*/);
+        if (boldMatch) {
+          return (
+            <strong key={i} className="font-extrabold text-slate-900 mx-0.5">
+              {boldMatch[1]}
+            </strong>
+          );
+        }
+        return <span key={i}>{part}</span>;
+      });
+
+      return (
+        <div
+          key={lineIdx}
+          className={`${isBullet ? "flex gap-2 ml-2 mb-1" : "mb-2"}`}
+        >
+          {isBullet && <span className="text-orange-500 font-bold">•</span>}
+          <div className="flex-1 leading-relaxed">{renderedLine}</div>
+        </div>
+      );
+    });
+  }
+
   return (
     <div className="w-full">
       {/* ── AI Feature 1: Search Bar ──────────────────────── */}
@@ -337,9 +372,9 @@ export default function WasteHeatmap() {
             <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center shrink-0">
               <Brain size={16} className="text-white" />
             </div>
-            <p className="text-sm font-medium text-green-800 leading-relaxed">
-              {aiExplanation}
-            </p>
+            <div className="text-sm font-medium text-green-800 leading-relaxed">
+              {renderContent(aiExplanation)}
+            </div>
           </div>
         )}
       </div>
@@ -480,9 +515,9 @@ export default function WasteHeatmap() {
             ) : (
               <>
                 <div className="prose prose-slate prose-sm max-w-none">
-                  <p className="text-slate-700 leading-relaxed font-medium bg-slate-50/50 p-4 rounded-2xl border border-slate-100/50">
-                    {aiInsight.insight}
-                  </p>
+                  <div className="text-slate-700 leading-relaxed font-medium bg-slate-50/50 p-4 rounded-2xl border border-slate-100/50">
+                    {renderContent(aiInsight.insight)}
+                  </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
