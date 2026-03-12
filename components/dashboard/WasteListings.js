@@ -1,29 +1,44 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { wasteListings } from '@/data/mockData';
-import Badge from '@/components/ui/Badge';
-import Button from '@/components/ui/Button';
-import { Pencil, Trash2, Sparkles, Plus, Calendar, Tag, Package } from 'lucide-react';
+import { useState } from "react";
+import { wasteListings } from "@/data/mockData";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import {
+  Pencil,
+  Trash2,
+  Sparkles,
+  Plus,
+  Calendar,
+  Tag,
+  Package,
+} from "lucide-react";
+import Link from "next/link";
 
 export default function WasteListings({ limit }) {
   const [listings, setListings] = useState(wasteListings);
   const displayed = limit ? listings.slice(0, limit) : listings;
 
-  const handleDelete = (id) => setListings(prev => prev.filter(l => l.id !== id));
+  const handleDelete = (id) =>
+    setListings((prev) => prev.filter((l) => l.id !== id));
 
   return (
     <div>
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-lg font-bold text-[#5f4f40]">Your Waste Listings</h2>
+        <Link href="/dashboard/listings/new">
         <Button variant="primary" size="sm" className="gap-1.5">
           <Plus size={14} /> Add Listing
         </Button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {displayed.map(({ id, name, quantity, category, status, date, description }) => (
-          <div key={id} className="bg-[#fcf8f1] rounded-2xl border border-[#dccfb9] shadow-[0_10px_30px_rgba(95,79,64,0.08)] p-5 flex flex-col gap-3 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(95,79,64,0.12)] transition-all duration-200">
+          <div
+            key={id}
+            className="bg-[#fcf8f1] rounded-2xl border border-[#dccfb9] shadow-[0_10px_30px_rgba(95,79,64,0.08)] p-5 flex flex-col gap-3 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(95,79,64,0.12)] transition-all duration-200"
+          >
             {/* Header */}
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2.5">

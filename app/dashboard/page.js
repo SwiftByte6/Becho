@@ -1,9 +1,10 @@
-import OverviewCards from '@/components/dashboard/OverviewCards';
-import WasteListings from '@/components/dashboard/WasteListings';
-import RecommendedMaterials from '@/components/dashboard/RecommendedMaterials';
-import QuickActions from '@/components/dashboard/QuickActions';
+import OverviewCards from "@/components/dashboard/OverviewCards";
+import WasteListings from "@/components/dashboard/WasteListings";
+import RecommendedMaterials from "@/components/dashboard/RecommendedMaterials";
+import QuickActions from "@/components/dashboard/QuickActions";
+import ImpactHeatmap from "@/components/dashboard/ImpactHeatmap";
 
-export const metadata = { title: 'Dashboard Overview | Becho' };
+export const metadata = { title: "Dashboard Overview | Becho" };
 
 export default function DashboardPage() {
   return (
@@ -14,8 +15,12 @@ export default function DashboardPage() {
       {/* Main grid: content + sidebar */}
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-6">
         <div className="flex flex-col gap-6">
+          {/* Heatmap Visualization */}
+          <ImpactHeatmap />
+
           {/* Recent Listings */}
           <WasteListings limit={3} />
+
           {/* Recent Recommendations */}
           <RecommendedMaterials limit={3} />
         </div>
