@@ -19,10 +19,10 @@ import pathlib
 # like `prompts.py` are always importable, regardless of working directory.
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
-from dotenv import load_dotenv
-from google import genai
+from dotenv import load_dotenv  # type: ignore
+from google import genai  # type: ignore
 
-from prompts import get_projects_prompt, get_tutorial_prompt
+from prompts import get_projects_prompt, get_tutorial_prompt  # type: ignore
 
 # ─────────────────────────────────────────────
 # Load API key from .env.local (project root)
@@ -83,7 +83,7 @@ def _extract_json(text: str):
 # Core API Functions
 # ─────────────────────────────────────────────
 
-def get_reuse_projects(material: str, quantity: int, user_interest: str = None) -> list:
+def get_reuse_projects(material: str, quantity: int, user_interest: str | None = None) -> list:
     """
     Generate 3–5 reuse project ideas for the given waste material.
 
@@ -206,7 +206,7 @@ def main():
 
     # 3. Ask for optional suggestion
     suggestion = input("  Do you have something in mind to build? (e.g., a lamp, storage box — press Enter to skip): ").strip()
-    user_interest = suggestion if suggestion else None
+    user_interest: str | None = suggestion if suggestion else None
 
     # 4. Show project ideas
     hint = f" with your idea: '{user_interest}'" if user_interest else ""

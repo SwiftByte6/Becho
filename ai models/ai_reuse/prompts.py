@@ -3,7 +3,7 @@ Prompt templates for the AI Reuse Recommendation module.
 """
 
 
-def get_projects_prompt(material: str, quantity: int, user_interest: str = None) -> str:
+def get_projects_prompt(material: str, quantity: int, user_interest: str | None = None) -> str:
     """
     Builds the prompt for generating reuse project ideas.
     """
