@@ -48,9 +48,8 @@ export default function PostListingForm() {
     e.preventDefault();
     setError("");
 
-    // ── Validation ──────────────────────────────────────────
-    if (!formData.latitude || !formData.longitude) {
-      alert("Please set a location before submitting");
+    if (formData.latitude === null || formData.longitude === null) {
+      setError("Please set a location before submitting.");
       return;
     }
 
@@ -242,6 +241,7 @@ export default function PostListingForm() {
 
       {/* Submit Button */}
       <Button
+        type="submit"
         variant="primary"
         fullWidth
         size="lg"
