@@ -23,10 +23,13 @@
   --text-primary: #0f172a;
   --text-secondary: #64748b;
   --text-muted: #94a3b8;
+  --background: #FDF5EA;
+  --heading: #675546;
+  --accent:#7F925B;
 }
 
 @theme inline {
-  --color-background: var(--bg);
+  --color-background: var(--background);
   --color-foreground: var(--text-primary);
   --font-sans: 'Inter', system-ui, sans-serif;
 }
@@ -40,7 +43,7 @@ html {
 }
 
 body {
-  background: var(--bg);
+  background: var(--background);
   color: var(--text-primary);
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
