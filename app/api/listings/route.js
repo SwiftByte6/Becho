@@ -75,6 +75,8 @@ export async function POST(req) {
     const location = formData.get("location");
     const description = formData.get("description");
     const imageFile = formData.get("image"); // actual file
+    const latitude = formData.get("latitude");
+    const longitude = formData.get("longitude");
 
     // ── Validate required fields ───────────────────────────
     if (!material_name || !category || !quantity || !unit) {
@@ -123,6 +125,8 @@ export async function POST(req) {
         description,
         image_url,
         status: "available",
+        latitude: latitude ? parseFloat(latitude) : null,
+        longitude: longitude ? parseFloat(longitude) : null,
       })
       .select()
       .single();
