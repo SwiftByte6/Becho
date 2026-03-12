@@ -1,23 +1,71 @@
 'use client';
 
-import { analyticsData } from '@/data/mockData';
+import { useEffect, useState } from 'react';
 import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend, PieChart, Pie, Cell,
 } from 'recharts';
 import { Zap, Leaf, Trash2, Droplets } from 'lucide-react';
 
-const impactMetrics = [
-  { label: 'Energy Saved',   value: '76',   unit: 'MWh',  icon: Zap,    color: 'text-[#a97f2f]', bg: 'bg-[#f8f0dc]' },
-  { label: 'CO₂ Reduced',    value: '4,200', unit: 'kg',  icon: Leaf,   color: 'text-[#6f8250]', bg: 'bg-[#edf4eb]' },
-  { label: 'Waste Diverted', value: '2,840', unit: 'kg',  icon: Trash2, color: 'text-[#72639a]', bg: 'bg-[#ece9f6]' },
-  { label: 'Water Saved',    value: '1,200', unit: 'L',   icon: Droplets,color: 'text-[#5c7a89]', bg: 'bg-[#e9f0f4]' },
-];
-
 export default function AnalyticsSection() {
+  const [analytics, setAnalytics] = useState({
+    impact: {
+      waste_reused: 0,
+      co2_saved: 0,
+      transactions_count: 0,
+      trees_equivalent: 0,
+    },
+    analytics: {
+      wasteByCategory: [],
+      reuseOverTime: [],
+    },
+  });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadAnalytics = async () => {
+      try {
+        setError('');
+        const response = await fetch('/api/impact/user', {
+          credentials: 'include',
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to load analytics.');
+        }
+
+        setAnalytics({
+          impact: data.impact,
+          analytics: data.analytics,
+        });
+      } catch (loadError) {
+        setError(loadError.message || 'Unable to load analytics.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadAnalytics();
+  }, []);
+
+  const impactMetrics = [
+    { label: 'Transactions', value: String(analytics.impact.transactions_count || 0), unit: '', icon: Zap, color: 'text-[#a97f2f]', bg: 'bg-[#f8f0dc]' },
+    { label: 'CO2 Reduced', value: String(analytics.impact.co2_saved || 0), unit: 'kg', icon: Leaf, color: 'text-[#6f8250]', bg: 'bg-[#edf4eb]' },
+    { label: 'Waste Diverted', value: String(analytics.impact.waste_reused || 0), unit: 'kg', icon: Trash2, color: 'text-[#72639a]', bg: 'bg-[#ece9f6]' },
+    { label: 'Trees Equivalent', value: String(analytics.impact.trees_equivalent || 0), unit: '', icon: Droplets, color: 'text-[#5c7a89]', bg: 'bg-[#e9f0f4]' },
+  ];
+
   return (
     <div className="flex flex-col gap-6">
       <h2 className="text-lg font-bold text-[#5f4f40]">Impact Analytics</h2>
+
+      {error && (
+        <div className="rounded-2xl border border-[#e5c4b1] bg-[#f7e9df] px-4 py-3 text-sm text-[#a85d3d]">
+          {error}
+        </div>
+      )}
 
       {/* Impact metric cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -38,7 +86,7 @@ export default function AnalyticsSection() {
         <div className="bg-[#fcf8f1] rounded-2xl border border-[#dccfb9] shadow-[0_10px_30px_rgba(95,79,64,0.08)] p-5">
           <p className="text-sm font-semibold text-[#6f655a] mb-4">Waste by Category (kg)</p>
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={analyticsData.wasteByCategory} barCategoryGap="35%">
+            <BarChart data={analytics.analytics.wasteByCategory} barCategoryGap="35%">
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eadfce" />
               <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#9a8f82' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: '#9a8f82' }} axisLine={false} tickLine={false} />
@@ -47,7 +95,7 @@ export default function AnalyticsSection() {
                 cursor={{ fill: '#f3e8d5' }}
               />
               <Bar dataKey="value" radius={[6, 6, 0, 0]}>
-                {analyticsData.wasteByCategory.map((entry, i) => (
+                {analytics.analytics.wasteByCategory.map((entry, i) => (
                   <Cell key={i} fill={entry.fill} />
                 ))}
               </Bar>
@@ -59,7 +107,7 @@ export default function AnalyticsSection() {
         <div className="bg-[#fcf8f1] rounded-2xl border border-[#dccfb9] shadow-[0_10px_30px_rgba(95,79,64,0.08)] p-5">
           <p className="text-sm font-semibold text-[#6f655a] mb-4">Reuse vs Listed Trend</p>
           <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={analyticsData.reuseOverTime}>
+            <LineChart data={analytics.analytics.reuseOverTime}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eadfce" />
               <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#9a8f82' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: '#9a8f82' }} axisLine={false} tickLine={false} />
@@ -78,8 +126,8 @@ export default function AnalyticsSection() {
         <div className="flex items-center gap-8 flex-wrap">
           <ResponsiveContainer width={220} height={180}>
             <PieChart>
-              <Pie data={analyticsData.wasteByCategory} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={3}>
-                {analyticsData.wasteByCategory.map((entry, i) => (
+              <Pie data={analytics.analytics.wasteByCategory} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={3}>
+                {analytics.analytics.wasteByCategory.map((entry, i) => (
                   <Cell key={i} fill={entry.fill} />
                 ))}
               </Pie>
@@ -87,7 +135,7 @@ export default function AnalyticsSection() {
             </PieChart>
           </ResponsiveContainer>
           <div className="flex flex-col gap-2">
-            {analyticsData.wasteByCategory.map(({ name, value, fill }) => (
+            {analytics.analytics.wasteByCategory.map(({ name, value, fill }) => (
               <div key={name} className="flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: fill }} />
                 <span className="text-xs text-[#7a7065]">{name}</span>
@@ -97,6 +145,12 @@ export default function AnalyticsSection() {
           </div>
         </div>
       </div>
+
+      {isLoading && (
+        <div className="rounded-2xl border border-[#dccfb9] bg-[#fcf8f1] px-4 py-3 text-sm text-[#7a7065]">
+          Loading analytics...
+        </div>
+      )}
     </div>
   );
 }

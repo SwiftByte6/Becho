@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Leaf, Eye, EyeOff, Building2, Mail, Lock, MapPin, ChevronDown, ArrowRight, Recycle } from 'lucide-react';
+import { Leaf, Eye, EyeOff, Building2, Mail, Lock, MapPin, ChevronDown, ArrowRight, Recycle, User } from 'lucide-react';
 
 const industries = [
   'Manufacturing', 'Automotive', 'Construction', 'Food & Beverage',
@@ -12,11 +12,106 @@ const industries = [
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    company_name: '',
+    industry_type: '',
+    email: '',
+    password: '',
+    location: '',
+  });
   const router = useRouter();
 
-  const handleSubmit = (e) => {
+  const handleChange = (field) => (e) => {
+    setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+  };
+
+  const resetMessages = () => {
+    setError('');
+    setSuccess('');
+  };
+
+  const handleModeChange = (nextIsLogin) => {
+    setIsLogin(nextIsLogin);
+    resetMessages();
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    router.push('/dashboard');
+
+    resetMessages();
+    setIsSubmitting(true);
+
+    try {
+      if (isLogin) {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to sign in.');
+        }
+
+        setSuccess('Login successful. Redirecting to dashboard...');
+        router.push('/dashboard');
+        router.refresh();
+        return;
+      }
+
+      const registerResponse = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          company_name: formData.company_name,
+          industry_type: formData.industry_type,
+          location: formData.location,
+        }),
+      });
+
+      const registerData = await registerResponse.json();
+
+      if (!registerResponse.ok) {
+        throw new Error(registerData.error || 'Unable to create account.');
+      }
+
+      const loginResponse = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const loginData = await loginResponse.json();
+
+      if (!loginResponse.ok) {
+        throw new Error(loginData.error || 'Account created, but auto-login failed.');
+      }
+
+      setSuccess('Account created successfully. Redirecting to dashboard...');
+      router.push('/dashboard');
+      router.refresh();
+    } catch (submitError) {
+      setError(submitError.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -98,7 +193,8 @@ export default function AuthPage() {
             {['Sign Up', 'Login'].map((tab, i) => (
               <button
                 key={tab}
-                onClick={() => setIsLogin(i === 1)}
+                type="button"
+                onClick={() => handleModeChange(i === 1)}
                 className={`flex-1 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer border-none ${(isLogin ? i === 1 : i === 0) ? 'bg-[#f8f1e6] text-[#33291f] shadow-sm' : 'bg-transparent text-[#7a7065] hover:text-[#5f4f40]'}`}
               >{tab}</button>
             ))}
@@ -107,12 +203,31 @@ export default function AuthPage() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {!isLogin && (
               <div>
+                <label className="block text-xs font-semibold text-[#6f655a] mb-1.5">Full Name</label>
+                <div className="relative">
+                  <User size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9a8f82]" />
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={handleChange('name')}
+                    placeholder="John Doe"
+                    className="w-full pl-10 pr-4 py-2.5 border border-[#dccfb9] rounded-xl text-sm bg-[#fcf8f1] text-[#4e4033] placeholder-[#a09486] outline-none focus:border-[#7f925b] focus:ring-2 focus:ring-[#d6e4c0] transition-all"
+                  />
+                </div>
+              </div>
+            )}
+
+            {!isLogin && (
+              <div>
                 <label className="block text-xs font-semibold text-[#6f655a] mb-1.5">Company Name</label>
                 <div className="relative">
                   <Building2 size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9a8f82]" />
                   <input
                     type="text"
                     required
+                    value={formData.company_name}
+                    onChange={handleChange('company_name')}
                     placeholder="EcoTech Solutions Ltd."
                     className="w-full pl-10 pr-4 py-2.5 border border-[#dccfb9] rounded-xl text-sm bg-[#fcf8f1] text-[#4e4033] placeholder-[#a09486] outline-none focus:border-[#7f925b] focus:ring-2 focus:ring-[#d6e4c0] transition-all"
                   />
@@ -126,6 +241,8 @@ export default function AuthPage() {
                 <div className="relative">
                   <select
                     required
+                    value={formData.industry_type}
+                    onChange={handleChange('industry_type')}
                     className="w-full pl-4 pr-10 py-2.5 border border-[#dccfb9] rounded-xl text-sm bg-[#fcf8f1] text-[#4e4033] outline-none focus:border-[#7f925b] focus:ring-2 focus:ring-[#d6e4c0] transition-all appearance-none"
                   >
                     <option value="">Select your industry</option>
@@ -143,6 +260,8 @@ export default function AuthPage() {
                 <input
                   type="email"
                   required
+                  value={formData.email}
+                  onChange={handleChange('email')}
                   placeholder="you@company.com"
                   className="w-full pl-10 pr-4 py-2.5 border border-[#dccfb9] rounded-xl text-sm bg-[#fcf8f1] text-[#4e4033] placeholder-[#a09486] outline-none focus:border-[#7f925b] focus:ring-2 focus:ring-[#d6e4c0] transition-all"
                 />
@@ -156,6 +275,8 @@ export default function AuthPage() {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
+                  value={formData.password}
+                  onChange={handleChange('password')}
                   placeholder="Min 8 characters"
                   className="w-full pl-10 pr-10 py-2.5 border border-[#dccfb9] rounded-xl text-sm bg-[#fcf8f1] text-[#4e4033] placeholder-[#a09486] outline-none focus:border-[#7f925b] focus:ring-2 focus:ring-[#d6e4c0] transition-all"
                 />
@@ -176,11 +297,25 @@ export default function AuthPage() {
                   <MapPin size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9a8f82]" />
                   <input
                     type="text"
+                    value={formData.location}
+                    onChange={handleChange('location')}
                     placeholder="City, State"
                     className="w-full pl-10 pr-4 py-2.5 border border-[#dccfb9] rounded-xl text-sm bg-[#fcf8f1] text-[#4e4033] placeholder-[#a09486] outline-none focus:border-[#7f925b] focus:ring-2 focus:ring-[#d6e4c0] transition-all"
                   />
                 </div>
               </div>
+            )}
+
+            {error && (
+              <p className="text-sm text-[#a85d3d] bg-[#f7e9df] border border-[#e5c4b1] rounded-xl px-3 py-2.5">
+                {error}
+              </p>
+            )}
+
+            {success && (
+              <p className="text-sm text-[#5f6f43] bg-[#edf4eb] border border-[#d4e1cf] rounded-xl px-3 py-2.5">
+                {success}
+              </p>
             )}
 
             {!isLogin && (
@@ -191,15 +326,16 @@ export default function AuthPage() {
 
             <button
               type="submit"
+              disabled={isSubmitting}
               className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#e6bf49] px-6 py-3 text-sm font-semibold text-[#2f261c] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#ddb43f]"
             >
-              {isLogin ? 'Sign In' : 'Create Account'} <ArrowRight size={16} />
+              {isSubmitting ? 'Please wait...' : isLogin ? 'Sign In' : 'Create Account'} <ArrowRight size={16} />
             </button>
           </form>
 
           <p className="text-center text-xs text-[#7a7065] mt-6">
             {isLogin ? "Don't have an account? " : 'Already have an account? '}
-            <button onClick={() => setIsLogin(!isLogin)} className="text-[#7f925b] font-semibold bg-transparent border-none cursor-pointer hover:underline">
+            <button type="button" onClick={() => handleModeChange(!isLogin)} className="text-[#7f925b] font-semibold bg-transparent border-none cursor-pointer hover:underline">
               {isLogin ? 'Sign Up' : 'Login'}
             </button>
           </p>

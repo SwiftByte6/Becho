@@ -11,7 +11,16 @@ export async function GET(req) {
     const category = searchParams.get("category");
     const location = searchParams.get("location");
     const search = searchParams.get("search");
-    const status = searchParams.get("status") || "available";
+    const mine = searchParams.get("mine") === "true";
+    const status = searchParams.get("status");
+
+    let user = null;
+    if (mine) {
+      user = await getUser();
+      if (!user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+    }
 
     let query = supabase
       .from("waste_listings")
@@ -37,8 +46,17 @@ export async function GET(req) {
         )
       `,
       )
-      .eq("status", status)
       .order("created_at", { ascending: false });
+
+    if (mine) {
+      query = query.eq("user_id", user.id);
+    } else {
+      query = query.eq("status", status || "available");
+    }
+
+    if (status && status !== "all") {
+      query = query.eq("status", status);
+    }
 
     // ── Optional filters ───────────────────────────────────
     if (category) query = query.eq("category", category);

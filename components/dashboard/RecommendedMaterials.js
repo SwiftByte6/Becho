@@ -1,11 +1,37 @@
 'use client';
 
-import { recommendations } from '@/data/mockData';
+import { useEffect, useState } from 'react';
 import Button from '@/components/ui/Button';
 import { Sparkles, Building2, Leaf, MessageSquare } from 'lucide-react';
 
 export default function RecommendedMaterials({ limit }) {
-  const items = limit ? recommendations.slice(0, limit) : recommendations;
+  const [items, setItems] = useState([]);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadRecommendations = async () => {
+      try {
+        setError('');
+        const response = await fetch('/api/recommendations', {
+          credentials: 'include',
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to load recommendations.');
+        }
+
+        setItems(limit ? (data.recommendations || []).slice(0, limit) : data.recommendations || []);
+      } catch (loadError) {
+        setError(loadError.message || 'Unable to load recommendations.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadRecommendations();
+  }, [limit]);
 
   return (
     <div>
@@ -20,6 +46,24 @@ export default function RecommendedMaterials({ limit }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {isLoading && (
+          <div className="col-span-full rounded-2xl border border-[#dccfb9] bg-[#fcf8f1] px-4 py-6 text-sm text-[#7a7065]">
+            Loading recommendations...
+          </div>
+        )}
+
+        {!isLoading && error && (
+          <div className="col-span-full rounded-2xl border border-[#e5c4b1] bg-[#f7e9df] px-4 py-6 text-sm text-[#a85d3d]">
+            {error}
+          </div>
+        )}
+
+        {!isLoading && !error && items.length === 0 && (
+          <div className="col-span-full rounded-2xl border border-[#dccfb9] bg-[#fcf8f1] px-4 py-6 text-sm text-[#7a7065]">
+            No recommendations yet. Add listings so the system can match them to reuse pathways.
+          </div>
+        )}
+
         {items.map(({ id, material, industry, score, benefit, co2, company }) => (
           <div key={id} className="bg-[#fcf8f1] rounded-2xl border border-[#dccfb9] shadow-[0_10px_30px_rgba(95,79,64,0.08)] p-5 flex flex-col gap-4 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(95,79,64,0.12)] transition-all duration-200">
             {/* Score badge */}
