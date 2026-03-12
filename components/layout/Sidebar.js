@@ -22,16 +22,16 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className={`fixed top-0 left-0 bottom-0 z-40 flex flex-col bg-gradient-to-b from-green-950 via-green-900 to-green-800 transition-all duration-300 ${collapsed ? 'w-[72px]' : 'w-60'}`}>
+    <aside className={`fixed top-0 left-0 bottom-0 z-40 flex flex-col bg-[#efe4d4] border-r border-[#d9ccb6] transition-all duration-300 ${collapsed ? 'w-[72px]' : 'w-60'}`}>
       {/* Logo */}
-      <div className="flex items-center gap-3 border-b border-white/10 min-h-16 px-4">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shrink-0">
+      <div className="flex items-center gap-3 border-b border-[#d9ccb6] min-h-16 px-4">
+        <div className="w-9 h-9 rounded-xl bg-[#7f925b] flex items-center justify-center shrink-0">
           <Leaf size={18} className="text-white" />
         </div>
         {!collapsed && (
           <div>
-            <p className="text-white font-extrabold text-lg leading-none tracking-tight">Becho</p>
-            <p className="text-green-300 text-[10px] font-medium mt-0.5">Circular Economy</p>
+            <p className="text-[#5f4f40] font-extrabold text-lg leading-none tracking-tight">Becho</p>
+            <p className="text-[#7f925b] text-[10px] font-semibold mt-0.5">Circular Economy</p>
           </div>
         )}
       </div>
@@ -46,8 +46,8 @@ export default function Sidebar() {
               href={href}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150 no-underline overflow-hidden whitespace-nowrap border-l-[3px]
                 ${active
-                  ? 'bg-green-400/20 text-green-300 border-green-400'
-                  : 'text-white/60 hover:text-white/90 hover:bg-white/8 border-transparent'
+                  ? 'bg-[#f8f1e6] text-[#33291f] border-[#7f925b]'
+                  : 'text-[#7a7065] hover:text-[#5f4f40] hover:bg-[#f6ecdc] border-transparent'
                 }`}
             >
               <Icon size={18} className="shrink-0" />
@@ -58,16 +58,16 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="px-2 py-3 border-t border-white/10 flex flex-col gap-1">
+      <div className="px-2 py-3 border-t border-[#d9ccb6] flex flex-col gap-1">
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-white/60 hover:text-white/90 hover:bg-white/8 text-sm font-medium transition-all duration-150 cursor-pointer bg-transparent border-none"
+          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-[#7a7065] hover:text-[#5f4f40] hover:bg-[#f6ecdc] text-sm font-medium transition-all duration-150 cursor-pointer bg-transparent border-none"
         >
           {collapsed ? <ChevronRight size={18} /> : <><ChevronLeft size={18} /><span>Collapse</span></>}
         </button>
         <Link
           href="/auth"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/50 hover:text-white/80 hover:bg-white/8 text-sm transition-all duration-150 no-underline whitespace-nowrap overflow-hidden"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#8e8172] hover:text-[#5f4f40] hover:bg-[#f6ecdc] text-sm transition-all duration-150 no-underline whitespace-nowrap overflow-hidden"
         >
           <LogOut size={18} className="shrink-0" />
           {!collapsed && <span>Logout</span>}

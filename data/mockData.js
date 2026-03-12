@@ -35,12 +35,12 @@ export const marketplaceItems = [
 
 export const analyticsData = {
   wasteByCategory: [
-    { name: "Metals", value: 1200, fill: "#16a34a" },
-    { name: "Paper", value: 1200, fill: "#10b981" },
-    { name: "Plastics", value: 300, fill: "#06b6d4" },
-    { name: "Wood", value: 800, fill: "#84cc16" },
-    { name: "Glass", value: 650, fill: "#22d3ee" },
-    { name: "Textiles", value: 120, fill: "#a3e635" },
+    { name: "Metals", value: 1200, fill: "#7f925b" },
+    { name: "Paper", value: 1200, fill: "#a8b985" },
+    { name: "Plastics", value: 300, fill: "#d97c52" },
+    { name: "Wood", value: 800, fill: "#e6bf49" },
+    { name: "Glass", value: 650, fill: "#8f80b5" },
+    { name: "Textiles", value: 120, fill: "#6f8896" },
   ],
   reuseOverTime: [
     { month: "Oct", reused: 320, listed: 500 },

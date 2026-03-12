@@ -14,12 +14,12 @@ export default function Button({
   const base = 'inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-95';
 
   const variants = {
-    primary: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-sm hover:shadow-md',
-    secondary: 'bg-green-50 text-green-700 hover:bg-green-100 focus:ring-green-400',
-    outline: 'bg-transparent text-green-700 border-2 border-green-600 hover:bg-green-50 focus:ring-green-400',
-    ghost: 'bg-transparent text-slate-600 hover:bg-slate-100 focus:ring-slate-300',
-    danger: 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 focus:ring-red-400',
-    dark: 'bg-slate-800 text-white hover:bg-slate-900 shadow-sm focus:ring-slate-500',
+    primary: 'bg-[#e6bf49] text-[#2f261c] hover:bg-[#ddb43f] focus:ring-[#d6b75b] shadow-sm hover:shadow-md',
+    secondary: 'bg-[#edf4eb] text-[#5f6f43] hover:bg-[#e2eddf] focus:ring-[#c7d9be] border border-[#d4e1cf]',
+    outline: 'bg-transparent text-[#6a7d4a] border-2 border-[#7f925b] hover:bg-[#edf4eb] focus:ring-[#c7d9be]',
+    ghost: 'bg-transparent text-[#6f655a] hover:bg-[#efe4d4] focus:ring-[#dccfb9]',
+    danger: 'bg-[#f7e9df] text-[#a85d3d] hover:bg-[#f2dece] border border-[#e5c4b1] focus:ring-[#e3bca2]',
+    dark: 'bg-[#5f4f40] text-white hover:bg-[#4f4135] shadow-sm focus:ring-[#8b7967]',
   };
 
   const sizes = {
